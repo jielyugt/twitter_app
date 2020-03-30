@@ -49,6 +49,7 @@ def main():
 			# if a already connected client sends a request
 			else:
 				raw_data = s.recv(2048)
+				print(raw_data.decode())
 				dic_data = json.loads(raw_data.decode())
 				cmd = dic_data['cmd']
 

@@ -24,6 +24,7 @@ def main():
 		response = response.decode()
 		if not response == 'Success':
 			print(Error.invalid_username)
+			client_socket.close()
 			sys.exit()
 		# after validate username:
 		print(Success.successful_login)
@@ -63,17 +64,16 @@ def main():
 			elif cmd[0] == 'gettweets':
 				get_tweet()
 			elif cmd[0] == 'exit':
+				obj = {}
+				obj['cmd'] = 'exit'
+				client_socket.send(json.dumps(obj).encode())
 				print('bye bye')
 				break
-		client_socket.close()
-
-					
-
-
 
 	except socket.error as e:
 		# shouldn't happend
 		print(str(e))
+	client_socket.close()
 
 
 	# TODO: listen to command: tweet, subscribe, unsubscribe, timeline, getusers, gettweets, exit
