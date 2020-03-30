@@ -24,7 +24,7 @@ def main():
 
 	# prepare data structures
 	socket_users = {}               # dict of socket connection -> user object
-    message_queues = {}             # dict of socket -> queue of Tweet object
+	message_queues = {}             # dict of socket -> queue of Tweet object
 
 	# select
 	potential_readers = [server_socket]
@@ -88,9 +88,9 @@ def main():
 				elif cmd == 'subscribe':
 					# TODO
 					pass
-                elif cmd == 'exit':
-                    socket_users.remove(s)
-                    potential_readers.remove(s)
+				elif cmd == 'exit':
+					socket_users.remove(s)
+					potential_readers.remove(s)
                     # client socket not removed from potential_writers because we want any pending messages to be still sent. 
 		
 		for s in ready_to_write:
@@ -104,7 +104,7 @@ def main():
 			
 			if len(message_queue) == 0:
 				potential_writers.remove(s)
-                del message_queues[s]
+				del message_queues[s]
 				
 
 if __name__ == '__main__':
