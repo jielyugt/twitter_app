@@ -23,7 +23,7 @@ def main():
 		response = client_socket.recv(2048)
 		response = response.decode()
 		if not response == 'Success':
-			print(Error.invalid_username)
+			print(Error.user_already_logged_in)
 			client_socket.close()
 			sys.exit()
 		# after validate username:

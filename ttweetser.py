@@ -31,6 +31,7 @@ def main():
 	potential_writers = []
 	potential_errors = []
 
+	print('ready for requests and commands')
 	while True:
 		ready_to_read, ready_to_write, in_error = \
 				select.select(
@@ -42,32 +43,50 @@ def main():
 
 			# if a connection from a new client is requested
 			if s is server_socket:
-				print('got connection')
+				print('new connect request received')
 				client_connection, client_address = s.accept()
 				potential_readers.append(client_connection)
 
 			# if a already connected client sends a request
 			else:
 				raw_data = s.recv(2048)
-				print(raw_data.decode())
+
+				# client exited through Conrol C or errored out becasue of duplicate username
+				if not raw_data:
+					print('someone already closed its socket')
+					potential_readers.remove(s)
+					if s in socket_users:
+						del socket_users[s]
+					if s in message_queues:
+						del message_queues[s]
+					if s in potential_writers:
+						potential_writers.remove(s)
+					continue
+
 				dic_data = json.loads(raw_data.decode())
+				print('new command received', dic_data)
 				cmd = dic_data['cmd']
 
 				if cmd == 'register':
+					# NOTE input: {'cmd':'register','username':'Tom'}
+					# NOTE return: 'Success' if operation successful, 'Error' if username already exists
 					username = dic_data['username']
 
 					# register user if no duplicate username
 					status = 'Success'
 					if not util.server_util.register_user(username, s, socket_users):
 						status = 'Error'
-					print(username, status)
+
 					# send status code
 					util.server_util.send_msg_socket([s],
 													status,
 													potential_writers,
 													message_queues)
+					print(username, 'login command' ,status)
 
-				if cmd == 'tweet': 
+				elif cmd == 'tweet':
+					# NOTE input: {'cmd':'tweet','message':'Hello World','hashtags':'#hello#world'}
+					# NOTE return: None
 					message = dic_data['message']
 					hashtags = dic_data['hashtags']
 
@@ -79,20 +98,69 @@ def main():
 					# find out subscribers to the hashtags
 					subscribers = util.server_util.tag_to_user(tag_list, list(socket_users.values()))
 					subscribers_sockets = [user.socket for user in subscribers]
-
+					
 					# push tweets
-					util.server_util.send_msg_socket(subscribers_sockets, 
-													tweet.push_format(), 
-													potential_writers, 
+					util.server_util.send_msg_socket(subscribers_sockets,
+													tweet.push_format(),
+													potential_writers,
 													message_queues)
+					# add tweets to timeline
+					for each in subscribers:
+						each.add_to_timeline(tweet)
+
+					print('tweet from ' + socket_users[s].username + 'pushed to' , [each.username for each in subscribers])
 
 				elif cmd == 'subscribe':
-					# TODO
-					pass
+					# NOTE input: {'cmd':'subscribe','hashtag':'hello'}
+					# NOTE return: 'Success' if operation successful, 'Error' if not
+					hashtag = dic_data['hashtag']
+
+					# try to subscribe the user to hashtag
+					status = 'Success'
+					if not socket_users[s].add_tag_subscribed(hashtag):
+						status = 'Error'
+
+					# send status code
+					util.server_util.send_msg_socket([s],
+													status,
+													potential_writers,
+													message_queues)
+					print(socket_users[s].username, 'subscribe request' ,status)
+
+				elif cmd == 'unsubscribe':
+					# NOTE input: {'cmd':'unsubscribe','hashtag':'hello'}
+					# NOTE return: 'Success' if operation successful, 'Error' if not
+					hashtag = dic_data['hashtag']
+
+					# try to subscribe the user to hashtag
+					status = 'Success'
+					socket_users[s].remove_tag_subscribed(hashtag):
+
+					# send status code
+					util.server_util.send_msg_socket([s],
+													status,
+													potential_writers,
+													message_queues)
+					print(socket_users[s].username, 'unsubscribe request' ,status)
+				
+				elif cmd == 'timeline':
+					# NOTE input: {'cmd':'timeline'}
+					# NOTE return: formatted timeline, a string
+
+					util.server_util.send_msg_socket([s],
+													socket_users[s].timeline,
+													potential_writers,
+													message_queues)
+					print(socket_users[s].username, 'timeline sent')
+
 				elif cmd == 'exit':
-					socket_users.remove(s)
+					print(socket_users[s].username, 'exited')
 					potential_readers.remove(s)
-                    # client socket not removed from potential_writers because we want any pending messages to be still sent. 
+					del socket_users[s]
+					if s in message_queues:
+						del message_queues[s]
+					if s in potential_writers:
+						potential_writers.remove(s)
 		
 		for s in ready_to_write:
 			message_queue = message_queues[s]

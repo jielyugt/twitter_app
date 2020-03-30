@@ -21,14 +21,15 @@ def tag_to_user(tags, users):
 	Given a list of hashtags, return the users who subscribe to them
 	
 	Args:
-		tags: a list of string, e.g. ['#hello','#world']
+		tags: a list of string, e.g. ['hello','world']
 		users: current users on the server, a list of User objects
 
 	Returns:
 		subscribers: a list of User objects
 	"""
 	subscribers = set()
-	for tag in tags:
+	tags_with_all = tags + ['ALL']
+	for tag in tags_with_all:
 		for user in users:
 			if tag in user.tags_subscribed:
 				subscribers.add(user)
