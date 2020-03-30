@@ -47,7 +47,8 @@ def register_user(username, socket, socket_user):
 	Returns:
 		False if user already exists, True if successful
 	"""
-	if username in socket_user.values():
+	already_registered_usernames = [user.username for user in socket_user.values()]
+	if username in already_registered_usernames:
 		return False
 	socket_user[socket] = User(username, socket)
 	return True
