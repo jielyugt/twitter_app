@@ -4,6 +4,7 @@ from util.messages import Error, Success
 import util.client_util
 import shlex
 import json
+import datetime
 
 
 
@@ -28,6 +29,7 @@ def main():
 			sys.exit()
 		# after validate username:
 		print(Success.successful_login)
+		obj = {}
 		while True:
 			cmd = input('user ' + username +' stdin command: ')
 			cmd = shlex.split(cmd)
@@ -51,12 +53,28 @@ def main():
 					for hashtag in hashtags[1:]:
 						if not hashtag or not hashtag.isalnum():
 							print(Error.illegal_hashtag)
-							continue;
-					postTwitter()
+							continue
+					obj['cmd'] = 'tweet'
+					obj['message'] = cmd[1]
+					obj['hashtags'] = cmd[2]
+					obj['timestamp'] = datetime.datetime()
+					client_socket.send(json.dumps(obj).encode())
+					response = client_socket.recv(2048)
+					if not response:
+						continue
+					print(response.decode())
 			elif cmd[0] == 'subscribe':
-				subscribe()
+				obj['cmd'] = 'subscribe'
+				obj['hashtag'] = cmd[1][1:]
+				client_socket.send(json.dumps(obj).encode())
+				response = client_socket.recv(2048)
+				response = response.decode()
+				if response == 'Success':
+					print('operation success')
 			elif cmd[0] == 'unsubscribe':
-				unsubscribe()
+				obj['cmd'] = 'unsubscribe'
+				obj['hashtag'] = cmd[1][1:]
+				client_socket.send(json.dumps(obj).encode())
 			elif cmd[0] == 'timeline':
 				timeline()
 			elif cmd[0] == 'getusers':

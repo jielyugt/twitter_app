@@ -134,7 +134,7 @@ def main():
 
 					# try to subscribe the user to hashtag
 					status = 'Success'
-					socket_users[s].remove_tag_subscribed(hashtag):
+					socket_users[s].remove_tag_subscribed(hashtag)
 
 					# send status code
 					util.server_util.send_msg_socket([s],
