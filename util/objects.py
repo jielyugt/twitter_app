@@ -9,15 +9,7 @@ class User:
 		self.tags_subscribed = []
 		self.tweets_posted = []
 		self.socket = socket
-		self.timeline = ''
-	
-	# def add_tweet_posted(self, tweet):
-	#     """Adds a tweet to the user pbject
-
-	#     Args:
-	#         tweet: the tweet posted by the user, a Tweet object
-	#     """
-	#     self.tweets_posted.append(tweet)
+		self.timeline = ''              # tweets pushed to the user
 	
 	def add_tag_subscribed(self, tag):
 		"""subscribe a user to a hashtag
@@ -60,8 +52,18 @@ class User:
 				self.tags_subscribed = []
 			else:
 				self.tags_subscribed.remove(tag)
-
-
+	
+	def get_tweets(self):
+		"""get all the tweets posted from a user
+		
+		Returns:
+			tweets: a string
+		"""
+		tweets = ''
+		for each in self.tweets_posted:
+			tweets += each.timeline_format() + '\n'
+		tweets = tweets.strip('\n')
+		return tweets
 
 
 class Tweet:

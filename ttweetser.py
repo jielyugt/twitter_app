@@ -108,7 +108,7 @@ def main():
 					for each in subscribers:
 						each.add_to_timeline(tweet)
 
-					print('tweet from ' + socket_users[s].username + 'pushed to' , [each.username for each in subscribers])
+					print(socket_users[s].username + ' tweet pushed to' , [each.username for each in subscribers])
 
 				elif cmd == 'subscribe':
 					# NOTE input: {'cmd':'subscribe','hashtag':'hello'}
@@ -148,10 +148,46 @@ def main():
 					# NOTE return: formatted timeline, a string
 
 					util.server_util.send_msg_socket([s],
-													socket_users[s].timeline,
+													socket_users[s].timeline.strip('\n'),
 													potential_writers,
 													message_queues)
 					print(socket_users[s].username, 'timeline sent')
+				
+				elif cmd == 'getusers':
+					# NOTE input: {'cmd':'getusers'}
+					# NOTE return: formatted user list, a string
+					
+					user_list = util.server_util.get_users(socket_users)
+
+					util.server_util.send_msg_socket([s],
+													user_list,
+													potential_writers,
+													message_queues)
+					print(socket_users[s].username, 'user list request sent')                               
+
+				elif cmd == 'gettweets':
+					# NOTE input: {'cmd':'gettweets','username':'Tom'}
+					# NOTE return: if username exists, formatted user tweet histoty, else, 'Error'
+					username = dic_data['username']
+
+					# check if username exists
+					target_user = None
+					for user in socket_users.values():
+						if user.username == username:
+							target_user = user
+					
+					if target_user is None:
+						util.server_util.send_msg_socket([s],
+														'Error',
+														potential_writers,
+														message_queues)
+						print(socket_users[s].username, 'requested tweet history from user', username, 'and user cannot be found')
+					else:
+						util.server_util.send_msg_socket([s],
+														target_user.get_tweets(),
+														potential_writers,
+														message_queues)
+						print(socket_users[s].username, 'requested tweet history from user', username, 'and user found')
 
 				elif cmd == 'exit':
 					print(socket_users[s].username, 'exited')
@@ -182,3 +218,4 @@ if __name__ == '__main__':
 # Below are related and useful links
 # Python Select: https://docs.python.org/3/library/select.html
 # Handle multiple clients with select: https://steelkiwi.com/blog/working-tcp-sockets/
+# getusers output order: https://piazza.com/class/k530q3x9ywp55n?cid=373

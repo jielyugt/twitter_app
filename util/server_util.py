@@ -54,6 +54,22 @@ def register_user(username, socket, socket_user):
 	socket_user[socket] = User(username, socket)
 	return True
 
+def get_users(socket_user):
+	"""get current user list
+	
+	Args:
+		socket_user: a dict of socket connection -> user object
+
+	Returns:
+		user_list: a string
+	"""
+	user_list = ''
+	for user in socket_user.values():
+		user_list += user.username + '\n'
+	user_list = user_list.strip('\n')
+	return user_list
+
+
 def send_msg_socket(sockets, message, potential_writers, message_queues):
 	"""send message to sockets
 	
