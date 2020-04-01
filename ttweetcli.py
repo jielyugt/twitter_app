@@ -4,7 +4,7 @@ from util.messages import Error, Success
 import util.client_util
 import shlex
 import json
-import datetime
+import threading
 
 
 
@@ -16,6 +16,7 @@ def main():
 	# TODO: request login to server
 	client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	try:
+		socket_lock = threading.Lock()
 		register = {}
 		client_socket.connect((server_ip, server_port))
 		register['cmd'] = 'register'
@@ -27,77 +28,78 @@ def main():
 			print(Error.user_already_logged_in)
 			client_socket.close()
 			sys.exit()
-		# after validate username:
 		print(Success.successful_login)
-		obj = {}
+		receive_thread = threading.Thread(target=receive_from_server, args=(client_socket,), name='Thread-receive', daemon=True)
+		receive_thread.start()
+		obj={}
 		while True:
-			cmd = input('user ' + username +' stdin command: ')
+			cmd = input('')
+			# need to check escape char
 			cmd = shlex.split(cmd)
 			if cmd[0] == 'tweet':
-				# tweet​ “<150 char max tweet>” <Hashtag>
-				# check no message or message len = 0
-				# '""'
-				if len(cmd) < 3 or len(cmd[1]) == 0:
-					print(Error.illegal_msg_len_none)
-					continue
-				# check messag length
-				elif len(cmd[1]) > 150:
-					print(Error.illegal_msg_len)
-					continue
-				else:
-					if not cmd[2].startswith('#'):
-						print(cmd[2])
-						print(Error.illegal_hashtag)
-						continue
-					hashtags = cmd[2].split('#')
-					for hashtag in hashtags[1:]:
-						if not hashtag or not hashtag.isalnum():
-							print(Error.illegal_hashtag)
-							continue
-					obj['cmd'] = 'tweet'
-					obj['message'] = cmd[1]
-					obj['hashtags'] = cmd[2]
-					obj['timestamp'] = datetime.datetime()
-					client_socket.send(json.dumps(obj).encode())
-					response = client_socket.recv(2048)
-					if not response:
-						continue
-					print(response.decode())
+				postTwitter(cmd, client_socket)
 			elif cmd[0] == 'subscribe':
 				obj['cmd'] = 'subscribe'
 				obj['hashtag'] = cmd[1][1:]
 				client_socket.send(json.dumps(obj).encode())
-				response = client_socket.recv(2048)
-				response = response.decode()
-				if response == 'Success':
-					print('operation success')
 			elif cmd[0] == 'unsubscribe':
 				obj['cmd'] = 'unsubscribe'
 				obj['hashtag'] = cmd[1][1:]
 				client_socket.send(json.dumps(obj).encode())
 			elif cmd[0] == 'timeline':
-				timeline()
+				obj['cmd'] = 'timeline'
+				client_socket.send(json.dumps(obj).encode())
 			elif cmd[0] == 'getusers':
-				getusers()
+				obj['cmd'] = 'getusers'
+				client_socket.send(json.dumps(obj).encode())
 			elif cmd[0] == 'gettweets':
-				get_tweet()
+				obj['cmd'] = 'gettweets'
+				obj['username'] = cmd[1]
+				client_socket.send(json.dumps(obj).encode())
 			elif cmd[0] == 'exit':
 				obj = {}
 				obj['cmd'] = 'exit'
 				client_socket.send(json.dumps(obj).encode())
 				print('bye bye')
 				break
-
+		client_socket.close()
 	except socket.error as e:
 		# shouldn't happend
 		print(str(e))
-	client_socket.close()
 
 
 	# TODO: listen to command: tweet, subscribe, unsubscribe, timeline, getusers, gettweets, exit
 
-def postTwitter():
-	pass
+def receive_from_server(socket):
+	while True:
+		response = socket.recv(2048)
+		#socket_lock.release()
+		response = response.decode()
+		print(response)
+
+
+def postTwitter(cmd, client_socket):
+	obj={}
+	# tweet​ “<150 char max tweet>” <Hashtag>
+	# check no message or message len = 0
+	if len(cmd) < 3 or len(cmd[1]) == 0:
+		print(Error.illegal_msg_len_none)
+	# check messag length
+	elif len(cmd[1]) > 150:
+		print(Error.illegal_msg_len)
+	else:
+		if not cmd[2].startswith('#'):
+			print(Error.illegal_hashtag)
+			return
+		hashtags = cmd[2].split('#')
+		for hashtag in hashtags[1:]:
+			if not hashtag or not hashtag.isalnum():
+				print(Error.illegal_hashtag)
+				return
+		obj['cmd'] = 'tweet'
+		obj['message'] = cmd[1]
+		obj['hashtags'] = cmd[2]
+		client_socket.send(json.dumps(obj).encode())
 
 def subscribe():
 	pass
