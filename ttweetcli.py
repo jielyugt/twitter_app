@@ -101,21 +101,6 @@ def postTwitter(cmd, client_socket):
 		obj['hashtags'] = cmd[2]
 		client_socket.send(json.dumps(obj).encode())
 
-def subscribe():
-	pass
-
-def unsubscribe():
-	pass
-
-def timeline():
-	pass
-
-def getusers():
-	pass
-
-def get_tweet():
-	pass
-
 
 if __name__ == '__main__':
 	main()

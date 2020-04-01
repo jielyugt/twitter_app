@@ -28,3 +28,12 @@ Available commands for client: tweet, subscribe, unsubscribe, timeline, getusers
 * Haoran Xin: I did blablabla
 * Jie Lyu: I did blablabla
 * Junyan Mao: I did blablabla
+
+## issue
+
+* client: handle escape char
+* server
+  * subscribe: give "operation success" back to client
+  * gettweets: give "no user Username in the system" back to client
+  * all tweets should have # 
+  * follow the server side ouput format in txt
