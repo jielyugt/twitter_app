@@ -35,7 +35,7 @@ def main():
 		while True:
 			cmd = input('')
 			# need to check escape char
-			cmd = shlex.split(cmd)
+			cmd = cmd.split()
 			if cmd[0] == 'tweet':
 				postTwitter(cmd, client_socket)
 			elif cmd[0] == 'subscribe':
@@ -80,6 +80,7 @@ def receive_from_server(socket):
 
 def postTwitter(cmd, client_socket):
 	obj={}
+	cmd[1] = cmd[1][1:-1]
 	# tweet​ “<150 char max tweet>” <Hashtag>
 	# check no message or message len = 0
 	if len(cmd) < 3 or len(cmd[1]) == 0:
