@@ -19,6 +19,8 @@ class Error(enum.Enum):
     illegal_hashtag = 'hashtag illegal format, connection refused.'
     # 9. Maximum hashtags reached: “operation failed: sub <hashtag> failed, already exists or exceeds 3 limitation”
     max_hashtag_reached = 'operation failed: sub <hashtag> failed, already exists or exceeds 3 limitation'
+    # 10. try to connect but no server is running
+    no_server_error = 'connection error, please check your server: Connection refuseds'
 
     def __str__(self):
         return str(self.value)

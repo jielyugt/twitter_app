@@ -40,6 +40,7 @@ def get_username(argv):
 	username = argv[3]
 	if not username.isalnum():
 		print(Error.invalid_username)
+		sys.exit()
 	return username
 
 

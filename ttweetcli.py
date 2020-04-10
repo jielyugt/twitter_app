@@ -5,6 +5,7 @@ import util.client_util
 import shlex
 import json
 import threading
+import re
 
 
 
@@ -14,11 +15,17 @@ def main():
 	server_ip, server_port, username = util.client_util.fetch_args(sys.argv)
 	
 	# TODO: request login to server
-	client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	
 	try:
-		socket_lock = threading.Lock()
-		register = {}
+		client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		client_socket.connect((server_ip, server_port))
+	except socket.error as e:
+		print(Error.no_server_error)
+		client_socket.close()
+		sys.exit()
+	try:
+		register = {}
+		#client_socket.connect((server_ip, server_port))
 		register['cmd'] = 'register'
 		register['username'] = username
 		client_socket.send(json.dumps(register).encode())
@@ -34,8 +41,7 @@ def main():
 		obj={}
 		while True:
 			cmd = input('')
-			# need to check escape char
-			cmd = cmd.split()
+			cmd = re.findall(r'[^"\s]\S*|".+?"', cmd)
 			if cmd[0] == 'tweet':
 				postTwitter(cmd, client_socket)
 			elif cmd[0] == 'subscribe':
@@ -65,7 +71,7 @@ def main():
 		client_socket.close()
 	except socket.error as e:
 		# shouldn't happend
-		print(str(e))
+		sys.exit()
 
 
 	# TODO: listen to command: tweet, subscribe, unsubscribe, timeline, getusers, gettweets, exit
@@ -73,7 +79,6 @@ def main():
 def receive_from_server(socket):
 	while True:
 		response = socket.recv(2048)
-		#socket_lock.release()
 		response = response.decode()
 		print(response)
 

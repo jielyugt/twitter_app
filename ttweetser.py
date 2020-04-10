@@ -19,6 +19,7 @@ def main():
 	try:
 		server_socket.bind(('localhost', server_port))
 	except:
+		server_socket.close()
 		sys.exit()
 	server_socket.listen(5)
 
@@ -116,10 +117,9 @@ def main():
 					hashtag = dic_data['hashtag']
 
 					# try to subscribe the user to hashtag
-					status = 'Success'
+					status = 'operation success'
 					if not socket_users[s].add_tag_subscribed(hashtag):
-						status = 'Error'
-
+						status = 'operation failed: sub ' +  '#' + hashtag  + ' failed, already exists or exceeds 3 limitation'
 					# send status code
 					util.server_util.send_msg_socket([s],
 													status,
@@ -133,7 +133,7 @@ def main():
 					hashtag = dic_data['hashtag']
 
 					# try to subscribe the user to hashtag
-					status = 'Success'
+					status = 'operation success'
 					socket_users[s].remove_tag_subscribed(hashtag)
 
 					# send status code

@@ -88,7 +88,7 @@ class Tweet:
 			formatted_tweet: the formatted tweet, a string
 		"""
 		original_tag = ''.join(self.tags_attached)
-		formatted_tweet = '{}: "{}" {}'.format(self.from_user.username, self.message, original_tag)
+		formatted_tweet = '{}: "{}" {}'.format(self.from_user.username, self.message, '#'+original_tag)
 		return formatted_tweet
 	
 	def push_format(self):
@@ -101,6 +101,6 @@ class Tweet:
 			formatted_tweet: the formatted tweet, a string
 		"""
 		original_tag = ''.join(self.tags_attached)
-		formatted_tweet = '{} "{}" {}'.format(self.from_user.username, self.message, original_tag)
+		formatted_tweet = '{} "{}" {}'.format(self.from_user.username, self.message, '#'+original_tag)
 		return formatted_tweet
 
