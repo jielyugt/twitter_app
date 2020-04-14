@@ -66,7 +66,7 @@ def main():
 				obj = {}
 				obj['cmd'] = 'exit'
 				client_socket.send(json.dumps(obj).encode())
-				print('bye bye')
+				print('bye bye', end="")
 				break
 		client_socket.close()
 	except socket.error as e:
