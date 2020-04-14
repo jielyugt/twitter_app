@@ -78,7 +78,7 @@ def main():
 
 def receive_from_server(socket):
 	while True:
-		response = socket.recv(2048)
+		response = socket.recv(50000)
 		response = response.decode()
 		print(response)
 
