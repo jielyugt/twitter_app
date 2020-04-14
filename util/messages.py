@@ -10,7 +10,7 @@ class Error(enum.Enum):
     # 4. User is already logged in: “username illegal, connection refused.”
     user_already_logged_in = 'username illegal, connection refused.'
     # 5. Wrong number of parameters: “error: args should contain <ServerIP> <ServerPort> <Username>”
-    wrong_param = 'error: args should contain <ServerIP> <ServerPort> <Username>'
+    wrong_param = 'error: args should contain <ServerIP>   <ServerPort>   <Username>'
     # 6. Illegal message length(>150): “message length illegal, connection refused.”
     illegal_msg_len = 'message length illegal, connection refused.'
     # 7. Illegal message length(=0 or None): “message format illegal.”
@@ -20,7 +20,7 @@ class Error(enum.Enum):
     # 9. Maximum hashtags reached: “operation failed: sub <hashtag> failed, already exists or exceeds 3 limitation”
     max_hashtag_reached = 'operation failed: sub <hashtag> failed, already exists or exceeds 3 limitation'
     # 10. try to connect but no server is running
-    no_server_error = 'connection error, please check your server: Connection refuseds'
+    no_server_error = 'connection error, please check your server: Connection refused'
 
     def __str__(self):
         return str(self.value)
