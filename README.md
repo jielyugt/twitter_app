@@ -12,6 +12,9 @@ Spring 2020 CS3251 Computer Networks I Programming  Assignment 2
 * ttweetcli.py: client application
 * ttweetser.py: server application
 
+## Requirement
+python >= 3.6.9
+
 ## How to Run
 
 ### Start the server application:
@@ -26,13 +29,5 @@ Available commands for client: tweet, subscribe, unsubscribe, timeline, getusers
 ## Team Members
 
 * Haoran Xin: I did blablabla
-* Jie Lyu: I did blablabla
+* Jie Lyu: implemented ttweetser.py
 * Junyan Mao: I did blablabla
-
-## issue
-
-* client: handle escape char
-* server
-  * gettweets: give "no user Username in the system" back to client
-  * all tweets should have # 
-  * follow the server side ouput format in txt
