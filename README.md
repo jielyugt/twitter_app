@@ -12,6 +12,17 @@ Spring 2020 CS3251 Computer Networks I Programming  Assignment 2
 * ttweetcli.py: client application
 * ttweetser.py: server application
 
+## Implementation Ideas
+
+### Server
+* utilized select() function to handle multiple clients
+* receive and send information to clients through TCP
+
+### Client
+* main program listens to user command
+* send commands and details packed in json dictionaries through TCP
+* daemon threads listens to server and print outputs
+
 ## Requirement
 python >= 3.6.9
 
@@ -28,6 +39,6 @@ Available commands for client: tweet, subscribe, unsubscribe, timeline, getusers
 
 ## Team Members
 
-* Haoran Xin: I did blablabla
+* Haoran Xin: implemented ttweetcli.py
 * Jie Lyu: implemented ttweetser.py
 * Junyan Mao: I did blablabla
