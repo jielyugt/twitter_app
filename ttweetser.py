@@ -10,7 +10,7 @@ import json
 ### Main Function
 
 def main():
-	
+
 	# collect arguments
 	server_port = util.server_util.fetch_args(sys.argv)
 
@@ -39,7 +39,7 @@ def main():
 					potential_readers,
 					potential_writers,
 					potential_errors)
-		
+
 		for s in ready_to_read:
 
 			# if a connection from a new client is requested
@@ -99,7 +99,7 @@ def main():
 					# find out subscribers to the hashtags
 					subscribers = util.server_util.tag_to_user(tag_list, list(socket_users.values()))
 					subscribers_sockets = [user.socket for user in subscribers]
-					
+
 					# push tweets
 					util.server_util.send_msg_socket(subscribers_sockets,
 													tweet.push_format(),
@@ -142,7 +142,7 @@ def main():
 													potential_writers,
 													message_queues)
 					print(socket_users[s].username, 'unsubscribe request' ,status)
-				
+
 				elif cmd == 'timeline':
 					# NOTE input: {'cmd':'timeline'}
 					# NOTE return: formatted timeline, a string
@@ -152,18 +152,18 @@ def main():
 													potential_writers,
 													message_queues)
 					print(socket_users[s].username, 'timeline sent')
-				
+
 				elif cmd == 'getusers':
 					# NOTE input: {'cmd':'getusers'}
 					# NOTE return: formatted user list, a string
-					
-					user_list = util.server_util.get_users(socket_users)
 
+					user_list = util.server_util.get_users(socket_users)
+					print(user_list)
 					util.server_util.send_msg_socket([s],
 													user_list,
 													potential_writers,
 													message_queues)
-					print(socket_users[s].username, 'user list request sent')                               
+					print(socket_users[s].username, 'user list request sent')
 
 				elif cmd == 'gettweets':
 					# NOTE input: {'cmd':'gettweets','username':'Tom'}
@@ -175,7 +175,7 @@ def main():
 					for user in socket_users.values():
 						if user.username == username:
 							target_user = user
-					
+
 					if target_user is None:
 						util.server_util.send_msg_socket([s],
 														'Error',
@@ -197,7 +197,7 @@ def main():
 						del message_queues[s]
 					if s in potential_writers:
 						potential_writers.remove(s)
-		
+
 		for s in ready_to_write:
 			message_queue = message_queues[s]
 			try:
@@ -206,11 +206,11 @@ def main():
 				print('Debug: poping from empty list. should not ever trigger this error. if triggered, check logics.')
 			else:
 				s.send(message_to_send.encode())
-			
+
 			if len(message_queue) == 0:
 				potential_writers.remove(s)
 				del message_queues[s]
-				
+
 
 if __name__ == '__main__':
 	main()

@@ -1,6 +1,6 @@
 # twitter_app
 
-Spring 2020 CS3251 Computer Networks I Programming  Assignment 2
+Spring 2020 CS3251 Computer Networks I Programming Assignment 2
 
 ## File Description
 
@@ -33,7 +33,7 @@ python3 ttweetser.py <port_number>
 
 ### Start the client application
 python3 ttweetcli.py <ServerIP> <ServerPort> <Username>
-  
+
 ### Use the client applciation
 Available commands for client: tweet, subscribe, unsubscribe, timeline, getusers, gettweets, exit
 
@@ -41,4 +41,4 @@ Available commands for client: tweet, subscribe, unsubscribe, timeline, getusers
 
 * Haoran Xin: implemented ttweetcli.py
 * Jie Lyu: implemented ttweetser.py
-* Junyan Mao: I did blablabla
+* Junyan Mao: tested the code and debugged after checking with provided output
